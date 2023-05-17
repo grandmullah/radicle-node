@@ -7,4 +7,4 @@ COPY . .
 
 RUN cargo build --release
 
-CMD ["app/target/release/node-template" ,"-c", "--dev"]
+RUN ["app/target/release/node-template" , "--dev"]
