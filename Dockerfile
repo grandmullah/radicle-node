@@ -7,4 +7,7 @@ COPY . .
 
 RUN cargo build --release
 
-CMD ["/app/target/release/node-template" , "--dev" ,"--ws-port 9944", "--ws-external", "--rpc-port 9933", "--rpc-external"]
+EXPOSE 9933
+EXPOSE 9944
+
+CMD ["/app/target/release/node-template" , "--chain local" ,"--ws-port 9944", "--ws-external", "--rpc-port 9933", "--rpc-external"]
