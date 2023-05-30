@@ -4,6 +4,7 @@
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
 /// <https://docs.substrate.io/reference/frame-pallets/>
 pub use pallet::*;
+use frame_support::dispatch::{Pays,DispatchClass};
 
 // #[cfg(test)]
 // mod mock;
@@ -17,8 +18,12 @@ pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
+	use super::*;
 	use frame_support::pallet_prelude::{*,DispatchResult};
 	use frame_system::pallet_prelude::{*, OriginFor};
+
+
+	
 	
 	use frame_support::sp_runtime::BoundedVec;
 	
@@ -67,7 +72,7 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			phone_number:PhoneNumber<T>,
 			name:Name<T>
-		) -> DispatchResult {
+		) -> DispatchResultWithPostInfo {
 			let _signer = ensure_signed(origin)?;
 			let verified:bool = false;
 			let usr_to_store = User::<T> {
@@ -77,7 +82,7 @@ pub mod pallet {
 
 			<Identity<T>>::insert(phone_number,usr_to_store);
 			// make a offchain call 
-			Ok(())
+			Ok(Pays::No.into())
 		}
 		
 		
