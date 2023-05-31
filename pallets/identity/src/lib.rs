@@ -1,5 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
-use frame_support::{dispatch::GetDispatchInfo, traits::UnfilteredDispatchable};
+
 
 /// Edit this file to define custom logic or remove it if it is not needed.
 /// Learn more about FRAME and the core library of Substrate FRAME pallets:
@@ -19,7 +19,7 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::pallet_prelude::{*,DispatchResult};
+	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::{*, OriginFor};
 
 
