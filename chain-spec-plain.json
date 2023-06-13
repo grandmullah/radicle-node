@@ -14,18 +14,18 @@
       },
       "aura": {
         "authorities": [
-          "5HGco7YHnF3CL2oZFo4PrX4MQFWubF2UWDAtMCXL3fWaVvf3",
-          "5FLoPjcVoiq5tpFZWsWWBG8gUvBwiuFZpTJxs6YMY4HfeYms"
+          "5Gv4Hbv2Yc1ywW5aKg5Lbx876QaydbicTGG5z8rWwNUvHTmD",
+          "5H9gtMfNuhCZhSf8GUPsQrBkSwxbqg8xLVuZGkVmjr4A3z1N"
         ]
       },
       "grandpa": {
         "authorities": [
           [
-            "5GUoryJApCkT9DhAv63ZpJokBE99HUM9BrnCE95U7iKPtB8h",
+            "5EYbYiayhnSBzS4twoUxTee5LpxAjUQSMnR9ceLKb15hNjis",
             1
           ],
           [
-            "5EhKhryJ77onizx6uM7di1evTvfkEvVnXmC7ZW7Mi1VG1HNh",
+            "5ETp7DGsKavwqhqjtKUu1WxwSMnxdroEFjGAZTXntzCwWJSY",
             1
           ]
         ]
@@ -43,7 +43,7 @@
         "multiplier": "1000000000000000000"
       },
       "sudo": {
-        "key": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
+        "key": "5EHXrw7KBPdpq1Cvnv27bChENqMtN1kmbhzMJYw7BNBt6PGP"
       }
     }
   }
