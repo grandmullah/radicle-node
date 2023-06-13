@@ -2,9 +2,7 @@
   "name": "Radicle Testnet",
   "id": "radicle_testnet",
   "chainType": "Local",
-  "bootNodes": [
-    "/ip4/127.0.0.1/tcp/30333/p2p/12D3KooWCjiZ4cHQgx3drL6eW2SaFmsUoyChAhgnJmepXsnH86Wz"
-  ],
+  "bootNodes": [],
   "telemetryEndpoints": null,
   "protocolId": null,
   "properties": null,
