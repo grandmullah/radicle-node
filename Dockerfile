@@ -11,5 +11,5 @@ EXPOSE 9933
 EXPOSE 9944
 EXPOSE 30333
 
-CMD ["./target/release/node-template", "-c" "--chain", "./customSpecRaw.json", "--base-path", "/tmp/node1", "--port", "30333", "--ws-port", "9944" ,"--unsafe-ws-external", "--rpc-port","9933","--unsafe-rpc-external","--rpc-cors","all", "--validator","--name","node1"]
+ENTRYPOINT ["./target/release/node-template",  "--chain", "./customSpecRaw.json", "--base-path", "/tmp/node1", "--port", "30333", "--ws-port", "9944" ,"--unsafe-ws-external", "--rpc-port","9933","--unsafe-rpc-external","--rpc-cors","all", "--validator","--name","node1"]
 
