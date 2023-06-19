@@ -4,8 +4,8 @@ WORKDIR /app/
 
 COPY . ./
 
-EXPOSE 9933
-EXPOSE 9944
+EXPOSE 9934
+EXPOSE 9945
 
 RUN chmod +x run.sh
 
