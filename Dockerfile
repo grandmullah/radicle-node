@@ -1,11 +1,8 @@
 FROM paritytech/ci-linux:production
 
-
 WORKDIR /app/
 
-COPY . .
-
-
+COPY . ./
 
 EXPOSE 9933
 EXPOSE 9944
@@ -13,4 +10,4 @@ EXPOSE 9944
 RUN chmod +x run.sh
 
 
-ENTRYPOINT ["/usr/src/app/run.sh"]
+ENTRYPOINT ["./run.sh"]
