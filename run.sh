@@ -1,0 +1,2 @@
+ls 
+cargo build --release
