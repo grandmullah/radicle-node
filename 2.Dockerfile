@@ -7,7 +7,7 @@ COPY . ./
 EXPOSE 9934
 EXPOSE 9945
 
-RUN chmod +x run.sh
+RUN chmod +x node2.sh
 
 
 ENTRYPOINT ["./node2.sh"]
