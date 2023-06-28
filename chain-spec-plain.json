@@ -1,7 +1,7 @@
 {
   "name": "Radicle Testnet",
   "id": "radicle_testnet",
-  "chainType": "Local",
+  "chainType": "Live",
   "bootNodes": [],
   "telemetryEndpoints": null,
   "protocolId": "Radicle",
