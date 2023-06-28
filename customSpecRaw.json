@@ -1,15 +1,20 @@
 {
   "name": "Radicle Testnet",
   "id": "radicle_testnet",
-  "chainType": "Local",
+  "chainType": "Live",
   "bootNodes": [],
   "telemetryEndpoints": null,
-  "protocolId": null,
-  "properties": null,
+  "protocolId": "Radicle",
+  "properties": {
+    "ss58Format": 0,
+    "tokenDecimals": 18,
+    "tokenSymbol": "RAD"
+  },
   "codeSubstitutes": {},
   "genesis": {
     "raw": {
       "top": {
+        "0x090ab5edfc399a62fdce934ae1c4f2364e7b9012096b41c4eb3aaf947f6ea429": "0x0000",
         "0x26aa394eea5630e07c48ae0c9558cef74e7b9012096b41c4eb3aaf947f6ea429": "0x0000",
         "0x26aa394eea5630e07c48ae0c9558cef75684a022a34dd8bfa2baaf44f172b710": "0x01",
         "0x26aa394eea5630e07c48ae0c9558cef78a42f33323cb5ced3b44dd825fda9fcc": "0x4545454545454545454545454545454545454545454545454545454545454545",

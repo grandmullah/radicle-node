@@ -19,8 +19,8 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::{*, OriginFor};
+	use frame_support::{pallet_prelude::*,sp_runtime::traits::{Zero,Saturating}};
+	use frame_system::{pallet_prelude::{*, OriginFor}, Account};
 
 
 	
@@ -49,19 +49,50 @@ pub mod pallet {
 	pub struct User<T:Config> {
 		name:Name<T>,
 		verified:bool,
+		phone_number:PhoneNumber<T>,
+		//role
+		// address
+		rating:u32
 	}
+	#[derive(Eq, PartialEq, Encode,Decode, TypeInfo,MaxEncodedLen)]
+	#[scale_info(skip_type_params(T))]
+	pub struct Cab<T:Config> {
+		plate:Name<T>,
+		manufacture_year:u16,
+		model:Name<T>,
+		owner:T::AccountId,
+		driver:T::AccountId,
+		verified:bool,
+		rating:u32,
+	}
+
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_user)]
-	pub(super) type Identity<T :Config>  = StorageMap<_, Blake2_128Concat, PhoneNumber<T>, User<T>,OptionQuery>;
+	pub(super) type Identity<T :Config>  = StorageMap<_, Blake2_128Concat, T::AccountId, User<T>, OptionQuery>;
 
+	#[pallet::storage]
+	#[pallet::getter(fn cab_count)]
+	pub(super) type CabCount<T> = StorageValue<_, u32, ValueQuery>;
+
+	
+
+	#[pallet::storage]
+	#[pallet::getter(fn get_cab)]
+	pub(super) type CabDetails<T :Config>  = StorageMap<_, Blake2_128Concat, u32, Cab<T>, OptionQuery>;
 
 	#[pallet::event]
 	pub enum Event<T:Config> {
 
 	}
 
-	// #[pallet::error]
+
+
+	#[pallet::error]
+	pub enum Error<T> {
+		/// The fund index specified does not exist
+		InvalidIndex,
+	}
 	
 	#[pallet::call]
 	impl <T:Config> Pallet<T> {
@@ -72,19 +103,62 @@ pub mod pallet {
 			origin: OriginFor<T>,
 			phone_number:PhoneNumber<T>,
 			name:Name<T>
+			
 		) -> DispatchResultWithPostInfo {
-			let _signer = ensure_signed(origin)?;
+			let signer = ensure_signed(origin)?;
 			let verified:bool = false;
+			let rating:u32 = 0;
 			let usr_to_store = User::<T> {
 				name,
-				verified
+				verified,
+				phone_number,
+				rating
 			};
 
-			<Identity<T>>::insert(phone_number,usr_to_store);
+			<Identity<T>>::insert(&signer,usr_to_store);
 			// make a offchain call 
 			Ok(Pays::No.into())
 		}
+
+		#[pallet::call_index(1)]
+		#[pallet::weight(0)]
+		pub fn add_cab(
+			origin: OriginFor<T>,
+			plate:Name<T>,
+			manufacture_year:u16,
+			model:Name<T>,
+			driver:T::AccountId,
+		) -> DispatchResultWithPostInfo{
+			let owner = ensure_signed(origin)?;
+			let count = Self::cab_count();
+
+
+			
+			// let mut  cab = Self::get_cab(count).ok_or(Error::<T>::InvalidIndex)?;
+			
+			
 		
+
+			
+			<CabDetails::<T>>::insert(count,Cab{
+				plate,
+				manufacture_year,
+				model,
+				owner,
+				driver,
+				verified:false,
+				rating:Zero::zero(),
+			});
+
+			<CabCount<T>>::put(count+1);
+			Ok(Pays::No.into())
+		}
+		
+		// add cab
+		// asider 
+		//update driver
+		//history of changes 
+		//update changes
 		
 
 	}
