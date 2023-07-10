@@ -18,10 +18,12 @@ pub use pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
+
+
 	use super::*;
 	use frame_support::{pallet_prelude::*,sp_runtime::traits::{Zero,Saturating}};
 	use frame_system::{pallet_prelude::{*, OriginFor}, Account};
-
+	use scale_info::prelude::string::String;
 
 	
 	
@@ -76,6 +78,27 @@ pub mod pallet {
 		rating:u32,
 	}
 
+	#[pallet::event]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
+	pub enum Event<T:Config> {
+		/// Event emitted when a account  has been created.
+		AccountCreated{who:T::AccountId,role:String},
+
+		///Event emmitted when a cab is registered.
+		CabAdded{who:T::AccountId,count:u32}
+	}
+
+
+
+	#[pallet::error]
+	pub enum Error<T> {
+		/// The cab index specified does not exist
+		InvalidIndex,
+
+		/// Caller is not the owner 
+		InvalidOwner
+	}
+
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_user)]
@@ -95,21 +118,7 @@ pub mod pallet {
 	#[pallet::getter(fn get_cab)]
 	pub(super) type CabDetails<T :Config>  = StorageMap<_, Blake2_128Concat, u32, Cab<T>, OptionQuery>;
 
-	#[pallet::event]
-	pub enum Event<T:Config> {
-
-	}
-
-
-
-	#[pallet::error]
-	pub enum Error<T> {
-		/// The cab index specified does not exist
-		InvalidIndex,
-
-		/// Caller is not the owner 
-		InvalidOwner
-	}
+	
 	
 	#[pallet::call]
 	impl <T:Config> Pallet<T> {
@@ -125,6 +134,7 @@ pub mod pallet {
 			let signer = ensure_signed(origin)?;
 			let verified:bool = false;
 			let rating:u32 = 0;
+			let role  =  String::from("rider");
 			let usr_to_store = User::<T> {
 				name,
 				verified,
@@ -134,6 +144,7 @@ pub mod pallet {
 
 			<Identity<T>>::insert(&signer,usr_to_store);
 			// make a offchain call 
+			Self::deposit_event(Event::<T>::AccountCreated {who:signer,role});
 			Ok(Pays::No.into())
 		}
 
@@ -148,6 +159,7 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo{
 			let owner = ensure_signed(origin)?;
 			let count = Self::cab_count();
+			let g = owner.clone();
 
 			// let mut  cab = Self::get_cab(count).ok_or(Error::<T>::InvalidIndex)?;
 			<CabDetails::<T>>::insert(count+1,Cab{
@@ -159,8 +171,9 @@ pub mod pallet {
 				verified:false,
 				rating:Zero::zero(),
 			});
-
+		
 			<CabCount<T>>::put(count+1);
+			Self::deposit_event(Event::<T>::CabAdded{who:g,count:count+1});
 			Ok(Pays::No.into())
 		}
 
@@ -177,7 +190,7 @@ pub mod pallet {
 			let verified:bool = false;
 			let rating:u32 = 0;
 			
-
+			let role  =  String::from("rider");
 			<Drivers<T>>::insert(&account,Driver {
 				name,
 				verified,
@@ -186,6 +199,7 @@ pub mod pallet {
 				rating,
 			});
 			// make a offchain call 
+			Self::deposit_event(Event::<T>::AccountCreated {who:account,role});
 			Ok(Pays::No.into())
 		}
 
@@ -211,14 +225,7 @@ pub mod pallet {
 			<Drivers<T>>::insert(&d,driver_details);
 			<CabDetails::<T>>::insert(cab,cab_details);
 
-			// <Drivers<T>>::insert(&account,Driver {
-			// 	name,
-			// 	verified,
-			// 	phone_number,
-			// 	cab,
-			// 	rating,
-			// });
-			// make a offchain call 
+
 			Ok(Pays::No.into())
 			// emmit  transer driver 
 		}

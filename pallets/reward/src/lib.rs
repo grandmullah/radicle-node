@@ -43,8 +43,7 @@ pub mod pallet {
 		type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 	}
 
-	pub type Name<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
-	pub type PhoneNumber<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
+	
 
 	
 	#[derive(Eq, PartialEq, Encode,Decode,Default, TypeInfo,MaxEncodedLen)]
@@ -54,6 +53,9 @@ pub mod pallet {
 		minter: AccountId,
 		burner: AccountId,
 	}
+    #[pallet::storage]
+	#[pallet::getter(fn meta_data)]
+	pub(super) type MetaDataStore<T: Config> = StorageValue<_, MetaData<T::AccountId, T::Balance>, ValueQuery>;
 
 	
 	#[pallet::storage]
