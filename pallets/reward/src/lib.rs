@@ -138,6 +138,8 @@ pub mod pallet {
 
 
 	}
+	
+
 	impl<T: Config<I>, I: 'static> Pallet<T, I> {
 		fn mint_into(who: &T::AccountId, amount: T::Balance)->bool {
 			Accounts::<T,I>::mutate(&who, |bal| {
@@ -151,6 +153,16 @@ pub mod pallet {
 			})
 		}
 	}
-
+	pub trait  RewardInterface<AccountId,Balance> {
+		fn mint_to(who:&AccountId,amount:&Balance)->bool;
+	}
+	
+	impl <T: Config<I>, I: 'static> RewardInterface<T::AccountId,T::Balance> for  Pallet<T, I> {
+		fn mint_to (who:&T::AccountId,amount:&T::Balance)->bool {
+			Self::mint_into(who,*amount)
+		}
+	}
 
 }
+
+

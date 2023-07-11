@@ -281,6 +281,7 @@ impl pallet_ride::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type MaxIdLengthBytes = ConstU32<32>;
+	type RewardCoin=Reward;
 }
 
 impl pallet_reward::Config<pallet_reward::Instance1> for Runtime {

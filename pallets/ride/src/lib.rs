@@ -28,6 +28,7 @@ pub mod pallet {
 	use frame_support::sp_runtime::BoundedVec;
 	
 	use scale_info::TypeInfo;
+	use pallet_reward::RewardInterface;
 
 	#[pallet::pallet]
 	#[pallet::without_storage_info]
@@ -39,6 +40,8 @@ pub mod pallet {
 		
 		#[pallet::constant]
 		type MaxIdLengthBytes: Get<u32>;
+
+		type RewardCoin:RewardInterface<Self::AccountId,Self::Balance>;
 		
 		type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 	}
@@ -46,21 +49,19 @@ pub mod pallet {
 	pub type Name<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 	pub type PhoneNumber<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 
-	
-	#[derive(Eq, PartialEq, Encode,Decode,Default, TypeInfo,MaxEncodedLen)]
-	#[scale_info(skip_type_params(T))]
-	pub struct MetaData<AccountId, Balance> {
-		issuance: Balance,
-		minter: AccountId,
-		burner: AccountId,
-	}
-
-	
 	#[pallet::storage]
-	#[pallet::getter(fn account)]
-	pub(super) type Accounts<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, T::Balance, ValueQuery>;
+	#[pallet::getter(fn base_fare)]
+	pub type BaseFare<T> = StorageValue<_, u32, ValueQuery>;
 
+	#[pallet::storage]
+	#[pallet::getter(fn cost_per_mile)]
+	pub type CostPerMile<T> = StorageValue<_, u32, ValueQuery>;
 
+	#[pallet::storage]
+	#[pallet::getter(fn cost_per_minute)]
+	pub type CostPerMinute<T> = StorageValue<_, u32, ValueQuery>;
+
+		
 	#[pallet::event]
 	pub enum Event<T:Config> {
 
@@ -92,11 +93,25 @@ pub mod pallet {
 			let _signer = ensure_signed(origin)?;
 
 			// check if the driver is ready 
-			// check if 
+			// calculate ride 
 			// emit request ride 
 			Ok(Pays::No.into())
 		}
-
+		#[pallet::call_index(2)]
+		#[pallet::weight(0)]
+		pub fn calculate_ride_fare(
+			origin: OriginFor<T>,
+			distance: u32,
+			duration: u32,
+		) -> DispatchResultWithPostInfo {
+			let base_fare = 1;
+			let cost_per_mile = 2;
+			let cost_per_minute = 1;
+			let fare = base_fare + distance * cost_per_mile + duration * cost_per_minute;
+			// do something with the calculated fare
+			Ok(().into())
+		}
+		
 		// set  base fare 
 		// set 
 		
