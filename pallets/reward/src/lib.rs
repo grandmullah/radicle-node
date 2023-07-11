@@ -19,59 +19,76 @@ pub use pallet::*;
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::{pallet_prelude::*,sp_runtime::traits::{Zero,Saturating,AtLeast32BitUnsigned,Member}};
+	use frame_support::{pallet_prelude::*,sp_runtime::traits::{AtLeast32BitUnsigned, Zero}, RuntimeDebug,
+	};
 	use frame_system::pallet_prelude::{*, OriginFor};
+	const STORAGE_VERSION: frame_support::traits::StorageVersion =
+		frame_support::traits::StorageVersion::new(1);
 
-
+		#[pallet::pallet]
+		#[pallet::without_storage_info]
+		#[pallet::storage_version(STORAGE_VERSION)]
+		pub struct Pallet<T, I=()>(PhantomData<(T, I)>);
 	
-	
-	use frame_support::sp_runtime::BoundedVec;
-	
-	use scale_info::TypeInfo;
-
-	#[pallet::pallet]
-	#[pallet::without_storage_info]
-	pub struct  Pallet<T>(_);
 
 	#[pallet::config]
-	pub trait Config: frame_system::Config {
-		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
-		
-		#[pallet::constant]
-		type MaxIdLengthBytes: Get<u32>;
-		
+	pub trait Config<I: 'static = ()>: frame_system::Config {
+		type RuntimeEvent: From<Event<Self,I>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+
 		type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
+
 	}
-
-	
-
-	
-	#[derive(Eq, PartialEq, Encode,Decode,Default, TypeInfo,MaxEncodedLen)]
+	#[derive(Clone, Encode, Decode, Eq, PartialEq,TypeInfo, RuntimeDebug)]
 	#[scale_info(skip_type_params(T))]
 	pub struct MetaData<AccountId, Balance> {
-		issuance: Balance,
+		issuance:Balance,
 		minter: AccountId,
-		burner: AccountId,
+		burner:AccountId,
 	}
+
+
+
     #[pallet::storage]
 	#[pallet::getter(fn meta_data)]
-	pub(super) type MetaDataStore<T: Config> = StorageValue<_, MetaData<T::AccountId, T::Balance>, ValueQuery>;
+	pub type MetaDataStore<T: Config<I>, I: 'static = ()> = StorageValue<_,MetaData<T::AccountId,T::Balance> ,OptionQuery>;
 
 	
 	#[pallet::storage]
-	#[pallet::getter(fn account)]
-	pub(super) type Accounts<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, T::Balance, ValueQuery>;
+	#[pallet::getter(fn account_balance)]
+	pub(super) type Accounts<T: Config<I>, I: 'static = ()> = StorageMap<_, Blake2_128Concat, T::AccountId, T::Balance, ValueQuery>;
+
+		
+	// Declare `admin` as type `T::AccountId`.
+	#[pallet::genesis_config]
+	#[derive(frame_support::DefaultNoBound)]
+	pub struct GenesisConfig<T: Config<I>, I: 'static = ()>{
+		pub phantom: PhantomData<I>,
+		pub admin: Option<T::AccountId>
+	}
+
+
+    #[pallet::genesis_build]
+	impl<T: Config<I>, I: 'static> GenesisBuild<T, I> for GenesisConfig<T, I> {
+		fn build(&self) {
+			if let Some(ref admin) = self.admin {
+				MetaDataStore::<T,I>::put(MetaData{
+					issuance:Zero::zero(),
+					minter: admin.clone(),
+					burner:admin.clone(),
+				});
+		}}
+	}
 
 
 	#[pallet::event]
-	pub enum Event<T:Config> {
+	pub enum Event<T: Config<I>, I: 'static = ()> {
 
 	}
 
 	// #[pallet::error]
 	
 	#[pallet::call]
-	impl <T:Config> Pallet<T> {
+	impl<T: Config<I>, I: 'static> Pallet<T, I> {
 
 		#[pallet::call_index(0)]
 		#[pallet::weight(0)]
@@ -85,29 +102,15 @@ pub mod pallet {
 		}
 
 
-		#[pallet::call_index(1)]
-		#[pallet::weight(0)]
-		pub fn request_ride(
-			origin: OriginFor<T>,
-			//ride Id 
-		) -> DispatchResultWithPostInfo {
-			let _signer = ensure_signed(origin)?;
-
-			// check if the driver is ready 
-			// check if 
-			// emit request ride 
-			Ok(Pays::No.into())
-		}
-
-		// set  base fare 
-		// set 
 		
-		// accept ride 
-		// request ride 
-		// feedback
-		// emit rewards 
-		// get estimates 
+		// mint 
+
 
 	}
+	impl<T: Config<I>, I: 'static> Pallet<T, I> {
+
+	}
+
+
 
 }

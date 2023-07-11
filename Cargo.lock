@@ -4246,6 +4246,8 @@ dependencies = [
  "pallet-balances",
  "pallet-grandpa",
  "pallet-identity",
+ "pallet-reward",
+ "pallet-ride",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
@@ -4531,6 +4533,36 @@ dependencies = [
 
 [[package]]
 name = "pallet-identity"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "pallet-reward"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "pallet-ride"
 version = "0.1.0"
 dependencies = [
  "frame-benchmarking",

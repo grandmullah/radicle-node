@@ -1,15 +1,11 @@
 {
-  "name": "Radicle Testnet",
-  "id": "radicle_testnet",
+  "name": "Local Testnet",
+  "id": "local_testnet",
   "chainType": "Local",
   "bootNodes": [],
   "telemetryEndpoints": null,
-  "protocolId": "Radicle",
-  "properties": {
-    "ss58Format": 0,
-    "tokenDecimals": 18,
-    "tokenSymbol": "RAD"
-  },
+  "protocolId": null,
+  "properties": null,
   "codeSubstitutes": {},
   "genesis": {
     "runtime": {
@@ -18,18 +14,18 @@
       },
       "aura": {
         "authorities": [
-          "5FqYvR9a2PbBK4bQUPVb1Pgsz7FQmcaC2RzVcr4paD1DY4Vr",
-          "5DoMuZEhtkuniq5rRSDkq2EezG5izdPAeJZePZrBeofknBRH"
+          "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
+          "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty"
         ]
       },
       "grandpa": {
         "authorities": [
           [
-            "5Ew486KWpa64rYWx4iwmvNz1jBHB1FUWrUzhDRiqnjQccAdS",
+            "5FA9nQDVg267DEd8m1ZypXLBnvN7SFxYwV7ndqSYGiN9TTpu",
             1
           ],
           [
-            "5Hhqw5STCHkNaE1yd6HXhjQzc6MpM4kKmo3RV3vFBy2DwknH",
+            "5GoNkf6WdbxCFnPdAnYYQyCjAKPJgLNxXwPjwTh6DGg6gN3E",
             1
           ]
         ]
@@ -37,11 +33,51 @@
       "balances": {
         "balances": [
           [
-            "5EHXrw7KBPdpq1Cvnv27bChENqMtN1kmbhzMJYw7BNBt6PGP",
+            "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY",
             1152921504606846976
           ],
           [
-            "5EUE8WqVXva3DHhcvYKWPPrAxn9oaUdKTx36xs3ez6JAyNty",
+            "5FHneW46xGXgs5mUiveU4sbTyGBzmstUspZC92UhjJM694ty",
+            1152921504606846976
+          ],
+          [
+            "5FLSigC9HGRKVhB9FiEo4Y3koPsNmBmLJbpXg2mp1hXcS59Y",
+            1152921504606846976
+          ],
+          [
+            "5DAAnrj7VHTznn2AWBemMuyBwZWs6FNFjdyVXUeYum3PTXFy",
+            1152921504606846976
+          ],
+          [
+            "5HGjWAeFDfFCWPsjFQdVV2Msvz2XtMktvgocEZcCj68kUMaw",
+            1152921504606846976
+          ],
+          [
+            "5CiPPseXPECbkjWCa6MnjNokrgYjMqmKndv2rSnekmSK2DjL",
+            1152921504606846976
+          ],
+          [
+            "5GNJqTPyNqANBkUVMN1LPPrxXnFouWXoe2wNSmmEoLctxiZY",
+            1152921504606846976
+          ],
+          [
+            "5HpG9w8EBLe5XCrbczpwq5TSXvedjrBGCwqxK1iQ7qUsSWFc",
+            1152921504606846976
+          ],
+          [
+            "5Ck5SLSHYac6WFt5UZRSsdJjwmpSZq85fd5TRNAdZQVzEAPT",
+            1152921504606846976
+          ],
+          [
+            "5HKPmK9GYtE1PSLsS1qiYU9xQ9Si1NcEhdeCq9sw5bqu4ns8",
+            1152921504606846976
+          ],
+          [
+            "5FCfAonRZgTFrTd9HREEyeJjDpT397KMzizE6T3DvebLFE7n",
+            1152921504606846976
+          ],
+          [
+            "5CRmqmsiNFExV6VbdmPJViVxrWmkaXXvBrSX8oqBT8R9vmWk",
             1152921504606846976
           ]
         ]
@@ -50,7 +86,7 @@
         "multiplier": "1000000000000000000"
       },
       "sudo": {
-        "key": "5EHXrw7KBPdpq1Cvnv27bChENqMtN1kmbhzMJYw7BNBt6PGP"
+        "key": "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY"
       }
     }
   }

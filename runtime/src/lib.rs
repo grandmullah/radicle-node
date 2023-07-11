@@ -49,6 +49,7 @@ pub use sp_runtime::{Perbill, Permill};
 // pub use pallet_template;
 pub use pallet_identity;
 pub use pallet_ride;
+pub use pallet_reward;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -118,7 +119,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 /// up by `pallet_aura` to implement `fn slot_duration()`.
 ///
 /// Change this to adjust the block time.
-pub const MILLISECS_PER_BLOCK: u64 = 6000;
+pub const MILLISECS_PER_BLOCK: u64 = 3000;
 
 // NOTE: Currently it is not possible to change the slot duration after the chain has started.
 //       Attempting to do so will brick block production.
@@ -282,6 +283,10 @@ impl pallet_ride::Config for Runtime {
 	type MaxIdLengthBytes = ConstU32<32>;
 }
 
+impl pallet_reward::Config<pallet_reward::Instance1> for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Balance = Balance;
+}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -300,7 +305,8 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 		// Include the custom logic from the pallet-template in the runtime.
 		Identity:pallet_identity,
-		Ride:pallet_ride
+		Ride:pallet_ride,
+		Reward:pallet_reward::<Instance1>
 		// TemplateModule: pallet_template,
 	}
 );
