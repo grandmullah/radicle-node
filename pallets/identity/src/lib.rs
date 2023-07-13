@@ -12,8 +12,8 @@ pub use pallet::*;
 // #[cfg(test)]
 // mod tests;
 
-// #[cfg(feature = "runtime-benchmarks")]
-// mod benchmarking;
+#[cfg(feature = "runtime-benchmarks")]
+mod benchmarking;
 
 
 #[frame_support::pallet]
@@ -62,6 +62,7 @@ pub mod pallet {
 		name:Name<T>,
 		verified:bool,
 		phone_number:PhoneNumber<T>,
+		ride_count:u32,
 		cab:u32,
 		rating:u32
 	}
@@ -189,12 +190,13 @@ pub mod pallet {
 			let account = ensure_signed(origin)?;
 			let verified:bool = false;
 			let rating:u32 = 0;
-			
+			let ride_count:u32 = 0;			
 			let role  =  String::from("rider");
 			<Drivers<T>>::insert(&account,Driver {
 				name,
 				verified,
 				phone_number,
+				ride_count,
 				cab,
 				rating,
 			});
@@ -238,5 +240,15 @@ pub mod pallet {
 		
 
 	}
+
+	pub trait  IdentityInterface<T:Config> {
+		fn get_driver (who:&T::AccountId) -> Option<Driver<T>>;
+	}
+	impl<T: Config> IdentityInterface<T> for Pallet<T> {
+		fn get_driver (who:&T::AccountId) -> Option<Driver<T>> {
+			Self::get_driver(who)
+		}
+	}
+
 
 }

@@ -282,6 +282,7 @@ impl pallet_ride::Config for Runtime {
 	type Balance = Balance;
 	type MaxIdLengthBytes = ConstU32<32>;
 	type RewardCoin=Reward;
+	// type Identity = Identity;
 }
 
 impl pallet_reward::Config<pallet_reward::Instance1> for Runtime {
@@ -355,7 +356,6 @@ mod benches {
 		[frame_system, SystemBench::<Runtime>]
 		[pallet_balances, Balances]
 		[pallet_timestamp, Timestamp]
-		[pallet_template, TemplateModule]
 	);
 }
 
