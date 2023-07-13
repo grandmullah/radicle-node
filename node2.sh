@@ -3,4 +3,4 @@
 
 cargo build --release
 ls  
-exec ./target/release/node-template --chain ./customSpecRaw.json --base-path /tmp/node2 --keystore-path /tmp/node2/chains/radicle_testnet/keystore  --port 30334 --ws-port 9945 --unsafe-ws-external --rpc-port 9934 --unsafe-rpc-external --rpc-cors all --validator --name node2 --bootnodes /ip4/0.0.0.0/tcp/30333/p2p/12D3KooWEyg81YQ1gAx99i2Saywui1o161ZhJcdNTG6QiqvRHkqB
+exec ./target/release/node-template --chain ./customSpecRaw.json --base-path /tmp/node2 --keystore-path /tmp/node2/chains/radicle_testnet/keystore  --port 30334 --ws-port 9945 --unsafe-ws-external --rpc-port 9934 --unsafe-rpc-external --rpc-cors all --validator --name node2 --bootnodes /ip4/0.0.0.0/tcp/30333/p2p/12D3KooWCPStgehkpzCVX2SCsnbddm8wkNpRtak49cMTtW8YnMDR
