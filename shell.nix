@@ -34,11 +34,11 @@ with nixpkgs; pkgs.mkShell {
 
 }
 
-./target/release/node-template key insert --base-path /tmp/node2 \
+./target/release/node-template key insert --base-path /tmp/node1 \
   --chain customSpecRaw.json \
-  --scheme Sr25519 \
-  --suri "cart chronic vicious food swamp school brand ivory road night smart umbrella" \
-  --key-type aura
+  --scheme Ed25519 \
+  --suri "cloth end journey alert drill echo cheap agent ethics current liberty way" \
+  --key-type gran
   ENTRYPOINT ["/usr/src/app/target/release/node-template",  "--chain", "./customSpecRaw.json", "--base-path", "/tmp/node1", "--keystore-path", "/tmp/node1/chains/radicle_testnet/keystore"  "--port", "30333", "--ws-port", "9944" ,"--unsafe-ws-external", "--rpc-port","9933","--unsafe-rpc-external","--rpc-cors","all", "--validator","--name","node1" ]
 
 

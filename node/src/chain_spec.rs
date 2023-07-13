@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use node_template_runtime::{
 	AccountId, AuraConfig, BalancesConfig, GenesisConfig, GrandpaConfig, Signature, SudoConfig,
 	SystemConfig,RewardConfig,  WASM_BINARY,
@@ -157,7 +159,7 @@ fn testnet_genesis(
 		transaction_payment: Default::default(),
     	reward:RewardConfig {
         	admin:   Some(minter_key),
-			phantom:Default::default()
+			phantom: PhantomData
 		},
 	}
 }
