@@ -49,11 +49,11 @@ pub mod pallet {
 		type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 	}
 
-	pub type Name<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
+	pub type BoundedS<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 	pub type PhoneNumber<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 
 	#[derive(Encode, Decode, Clone, PartialEq, Eq,TypeInfo, RuntimeDebug)]
-	pub struct UberRide<AccountId> {
+	pub struct Ride<AccountId> {
 		pub rider: AccountId,
 		pub distance: u32,
 		pub duration: u32,
@@ -62,20 +62,27 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn ride_count)]
-	pub(super) type UserRides<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, u32, OptionQuery>;
+	pub(super) type UserRides<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, Ride<T::AccountId>, OptionQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn rides_count)]
+	pub(super) type UserRidesCount<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, u32, OptionQuery>;
 
 
 
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T:Config> {
-		Request(T::AccountId, T::AccountId, u32),
+		RideAccepted(T::AccountId, T::AccountId, BoundedS<T>),
 	}
 
 	#[pallet::error]
 	pub enum Error<T> {
 		/// The cab index specified does not exist
 		InvalidIndex,
+
+		///
+		UnverifiedDriver,
 
 		/// Caller is not the owner 
 		InvalidOwner,
@@ -84,7 +91,10 @@ pub mod pallet {
 		DriverNotAvailable,
 
 		///no count
-		NoCount
+		NoCount,
+
+		///
+		RideAccepted
 	}
 	
 	#[pallet::call]
@@ -94,35 +104,22 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn accept_ride(
 			origin: OriginFor<T>,
-			//ride Id 
-		) -> DispatchResultWithPostInfo {
-			let _signer = ensure_signed(origin)?;
-			
-			Ok(Pays::No.into())
-		}
-
-
-		#[pallet::call_index(1)]
-		#[pallet::weight(0)]
-		pub fn request_ride(
-			origin: OriginFor<T>,
+			rideId:BoundedS<T>,
 			driver:T::AccountId,
-			//ride Id 
 		) -> DispatchResultWithPostInfo {
 			let signer = ensure_signed(origin)?;
-
-			let driver_details = pallet_identity::Pallet::<T>::get_driver(&driver).ok_or(Error::<T>::DriverNotAvailable)?;
-			
-			
-			let count = Self::ride_count(&driver).ok_or(Error::<T>::NoCount)?;
-			// check if the driver is ready 
-			// calculate ride 
-			// emit request ride 
-			Self::deposit_event(Event::<T>::Request(signer,driver,count));
+			let driver_details = pallet_identity::Pallet::<T>::get_driver(&driver).ok_or(Error::<T>::DriverNotAvailable);
+			let details = driver_details.unwrap();
+			ensure!(details.verified,Error::<T>::UnverifiedDriver );
+			ensure!(details.cab > 0u32, Error::<T>::DriverNotAvailable);
+			Self::deposit_event(Event::<T>::RideAccepted(signer,driver,rideId));
 			Ok(Pays::No.into())
 		}
 
-		#[pallet::call_index(2)]
+
+		
+
+		#[pallet::call_index(1)]
 		#[pallet::weight(0)]
 		pub fn calculate_ride_fare(
 			origin: OriginFor<T>,
@@ -134,7 +131,7 @@ pub mod pallet {
 			let cost_per_minute: u32 = 1;
 			let fare = base_fare + distance * cost_per_mile + duration * cost_per_minute;
 			// do something with the calculated fare
-			Ok(().into())
+			Ok(Pays::No.into())
 		}
 		
 		// set  base fare 

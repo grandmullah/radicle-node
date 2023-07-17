@@ -49,29 +49,29 @@ pub mod pallet {
 	#[derive(Eq, PartialEq, Encode,Decode,Default, TypeInfo,MaxEncodedLen,Clone)]
 	#[scale_info(skip_type_params(T))]
 	pub struct User<T:Config> {
-		name:Name<T>,
-		verified:bool,
-		phone_number:PhoneNumber<T>,
+		pub name:Name<T>,
+		pub verified:bool,
+		pub phone_number:PhoneNumber<T>,
 		//role
 		// address
-		rating:u32
+		pub rating:u32
 	}
 	#[derive(Eq, PartialEq, Encode,Decode,Default, TypeInfo,MaxEncodedLen,Clone )]
 	#[scale_info(skip_type_params(T))]
 	pub struct Driver<T:Config> {
-		name:Name<T>,
-		verified:bool,
-		phone_number:PhoneNumber<T>,
-		ride_count:u32,
-		cab:u32,
-		rating:u32
+		pub name:Name<T>,
+		pub verified:bool,
+		pub phone_number:PhoneNumber<T>,
+		pub ride_count:u32,
+		pub cab:u32,
+		pub rating:u32
 	}
 
 	#[derive(Eq, PartialEq, Encode,Decode, TypeInfo,MaxEncodedLen,Clone )]
 	#[scale_info(skip_type_params(T))]
 	pub struct Cab<T:Config> {
-		plate:Name<T>,
-		manufacture_year:u16,
+		pub plate:Name<T>,
+		pub manufacture_year:u16,
 		model:Name<T>,
 		owner:T::AccountId,
 		driver:T::AccountId,
@@ -97,7 +97,10 @@ pub mod pallet {
 		InvalidIndex,
 
 		/// Caller is not the owner 
-		InvalidOwner
+		InvalidOwner,
+
+		/// driver does not exist
+		DriverDoesNotExist
 	}
 
 
@@ -191,7 +194,10 @@ pub mod pallet {
 			let verified:bool = false;
 			let rating:u32 = 0;
 			let ride_count:u32 = 0;			
-			let role  =  String::from("rider");
+			let role  =  String::from("driver");
+			let cab_details = Self::get_cab(cab).ok_or(Error::<T>::InvalidIndex)?;
+			// cab.owner
+			ensure!(account == cab_details.owner,<Error<T>>::InvalidOwner);
 			<Drivers<T>>::insert(&account,Driver {
 				name,
 				verified,
@@ -215,7 +221,7 @@ pub mod pallet {
 			let account = ensure_signed(origin)?;
 
 			let mut cab_details = Self::get_cab(cab).ok_or(Error::<T>::InvalidIndex)?;
-			let mut driver_details = Self::get_driver(&driver).ok_or(Error::<T>::InvalidIndex)?;
+			let mut driver_details = Self::get_driver(&driver).ok_or(Error::<T>::DriverDoesNotExist)?;
 			// cab.owner
 			ensure!(account == cab_details.owner,<Error<T>>::InvalidOwner);
 			let d = &driver.clone();
@@ -224,8 +230,51 @@ pub mod pallet {
 
 	
 
-			<Drivers<T>>::insert(&d,driver_details);
+			<Drivers::<T>>::insert(&d,driver_details);
 			<CabDetails::<T>>::insert(cab,cab_details);
+
+
+			Ok(Pays::No.into())
+			// emmit  transer driver 
+		}
+
+		#[pallet::call_index(4)]
+		#[pallet::weight(0)]
+		pub fn verify_cab(
+			origin: OriginFor<T>,
+			cab:u32,
+		) -> DispatchResultWithPostInfo {
+			let account = ensure_signed(origin)?;
+
+			let mut cab_details = Self::get_cab(cab).ok_or(Error::<T>::InvalidIndex)?;
+			
+			// cab.owner
+			
+			cab_details.verified = true;
+
+	
+			<CabDetails::<T>>::insert(cab,cab_details);
+
+
+			Ok(Pays::No.into())
+			// emmit  transer driver 
+		}
+		#[pallet::call_index(5)]
+		#[pallet::weight(0)]
+		pub fn verify_driver(
+			origin: OriginFor<T>,
+			driver:T::AccountId
+		) -> DispatchResultWithPostInfo {
+			let _account = ensure_signed(origin)?;
+
+			let mut driver_details = Self::get_driver(&driver).ok_or(Error::<T>::InvalidIndex)?;
+			
+			// cab.owner
+			
+			driver_details.verified =  true;
+
+	
+			<Drivers::<T>>::insert(&driver,driver_details);
 
 
 			Ok(Pays::No.into())
