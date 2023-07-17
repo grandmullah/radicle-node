@@ -50,16 +50,19 @@ pub mod pallet {
 	pub type PhoneNumber<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 
 	#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
-	pub struct UberRide<AccountId> {
-		pub rider: AccountId,
-		pub distance: u32,
-		pub duration: u32,
-		pub fare: u32,
+	pub struct Proposal {
+		pub base_fare:u32;
+		pub cost_per_mile:u32;
+		pub cost_per_minute: u32;
 	}
 
 	#[pallet::storage]
+	#[pallet::getter(fn proposal_index)]
+	pub type ProposalCount<T> = StorageValue<_, u32, ValueQuery>;
+
+	#[pallet::storage]
 	#[pallet::getter(fn base_fare)]
-	pub type BaseFare<T> = StorageValue<_, u32, ValueQuery>;
+	pub type BasewFare<T> = StorageValue<_, u32, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn cost_per_mile)]
@@ -71,7 +74,7 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn completed_rides)]
-	pub type CompletedRides<T: Config> = StorageValue<_, Vec<UberRide<T::AccountId>>, ValueQuery>;
+	pub type PassedProposals<T: Config> = StorageValue<_, Vec<UberRide<T::AccountId>>, ValueQuery>;
 
 	#[pallet::event]
 	pub enum Event<T:Config> {
@@ -97,7 +100,7 @@ pub mod pallet {
 
 		#[pallet::call_index(1)]
 		#[pallet::weight(0)]
-		pub fn request_ride(
+		pub fn proposal_fare(
 			origin: OriginFor<T>,
 			//ride Id 
 		) -> DispatchResultWithPostInfo {

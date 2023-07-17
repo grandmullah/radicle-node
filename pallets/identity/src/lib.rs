@@ -195,9 +195,6 @@ pub mod pallet {
 			let rating:u32 = 0;
 			let ride_count:u32 = 0;			
 			let role  =  String::from("driver");
-			let cab_details = Self::get_cab(cab).ok_or(Error::<T>::InvalidIndex)?;
-			// cab.owner
-			ensure!(account == cab_details.owner,<Error<T>>::InvalidOwner);
 			<Drivers<T>>::insert(&account,Driver {
 				name,
 				verified,
