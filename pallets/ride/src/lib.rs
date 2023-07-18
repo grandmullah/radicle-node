@@ -30,6 +30,7 @@ pub mod pallet {
 	use scale_info::TypeInfo;
 	use pallet_reward::RewardInterface;
 	use pallet_identity;
+	use pallet_sacco::SaccoInterface;
 
 	#[pallet::pallet]
 	#[pallet::without_storage_info]
@@ -44,7 +45,7 @@ pub mod pallet {
 
 		type RewardCoin:RewardInterface<Self::AccountId,Self::Balance>;
 
-	
+		type Sacco:SaccoInterface;
 		
 		type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 	}
@@ -74,6 +75,8 @@ pub mod pallet {
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T:Config> {
 		RideAccepted(T::AccountId, T::AccountId, BoundedS<T>),
+		RideCompleted(T::AccountId, T::AccountId, BoundedS<T>,u32),
+		UserRewards(T::AccountId, T::AccountId, BoundedS<T>,u32),
 	}
 
 	#[pallet::error]
@@ -104,7 +107,7 @@ pub mod pallet {
 		#[pallet::weight(0)]
 		pub fn accept_ride(
 			origin: OriginFor<T>,
-			rideId:BoundedS<T>,
+			ride_id:BoundedS<T>,
 			driver:T::AccountId,
 		) -> DispatchResultWithPostInfo {
 			let signer = ensure_signed(origin)?;
@@ -112,28 +115,67 @@ pub mod pallet {
 			let details = driver_details.unwrap();
 			ensure!(details.verified,Error::<T>::UnverifiedDriver );
 			ensure!(details.cab > 0u32, Error::<T>::DriverNotAvailable);
-			Self::deposit_event(Event::<T>::RideAccepted(signer,driver,rideId));
+			Self::deposit_event(Event::<T>::RideAccepted(signer,driver,ride_id));
 			Ok(Pays::No.into())
 		}
 
-
-		
 
 		#[pallet::call_index(1)]
 		#[pallet::weight(0)]
-		pub fn calculate_ride_fare(
+
+		pub fn complete_ride(
 			origin: OriginFor<T>,
+			ride_id:BoundedS<T>,
 			distance: u32,
 			duration: u32,
+			rate:u32,
+			rider:T::AccountId
 		) -> DispatchResultWithPostInfo {
-			let base_fare = 1;
-			let cost_per_mile = 2;
-			let cost_per_minute: u32 = 1;
-			let fare = base_fare + distance * cost_per_mile + duration * cost_per_minute;
-			// do something with the calculated fare
+			let signer = ensure_signed(origin)?;
+			let fare = Self::calculate_ride_fare(distance, duration);
+			let reward = T::Sacco::get_rewards();
+			let  rider_details = pallet_identity::Pallet::<T>::get_user(&rider).ok_or(Error::<T>::DriverNotAvailable);
+			let  driver_details = pallet_identity::Pallet::<T>::get_driver(&signer).ok_or(Error::<T>::DriverNotAvailable);
+			let mut details = rider_details.unwrap();
+			let mut details_driver = driver_details.unwrap();
+			let g = details.rating;
+
+			details.rating = (g+rate)/2;
+			details_driver.ride_count = (details_driver.ride_count)+1;
+			pallet_identity::Identity::<T>::insert(&rider.clone(),&details);
+			pallet_identity::Drivers::<T>::insert(&signer.clone(),&details_driver);
+
+			
+			T::RewardCoin::mint_to(&signer,&reward.into());
+			Self::deposit_event(Event::<T>::UserRewards(signer.clone(), rider.clone(), ride_id.clone(),reward));
+			Self::deposit_event(Event::<T>::RideCompleted(signer, rider, ride_id,fare));
 			Ok(Pays::No.into())
 		}
+		#[pallet::call_index(2)]
+		#[pallet::weight(0)]
+
+		pub fn rider_feedback(
+			origin: OriginFor<T>,
+			ride_id:BoundedS<T>,
+			rate:u32,
+			driver:T::AccountId
+		) -> DispatchResultWithPostInfo {
+			let signer = ensure_signed(origin)?;
 		
+			let reward = T::Sacco::get_rewards();
+			let  driver_details = pallet_identity::Pallet::<T>::get_driver(&driver).ok_or(Error::<T>::DriverNotAvailable);
+			let mut details = driver_details.unwrap();
+			let g = details.rating;
+
+			details.rating = (g+rate)/2;
+			pallet_identity::Drivers::<T>::insert(&driver.clone(),&details);
+
+			
+			T::RewardCoin::mint_to(&signer,&reward.into());
+			Self::deposit_event(Event::<T>::UserRewards(signer, driver, ride_id,reward));
+			Ok(Pays::No.into())
+		}
+
 		// set  base fare 
 		// set 
 		
@@ -144,5 +186,18 @@ pub mod pallet {
 		// get estimates 
 
 	}
-
+	impl <T:Config> Pallet<T> {
+		fn calculate_ride_fare(
+			distance: u32,
+			duration: u32,
+		) ->u32 {
+			let base_fare = T::Sacco::base_fare();
+			let cost_per_mile = T::Sacco::cost_per_mile();
+			let cost_per_minute=T::Sacco::cost_per_minute();
+			let fare = base_fare + distance * cost_per_mile + duration * cost_per_minute;
+			fare
+		}
+	}
+	
 }
+

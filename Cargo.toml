@@ -4,6 +4,7 @@ members = [
     "pallets/reward",
     "pallets/ride",
     "pallets/identity",
+    "pallets/sacco",
     "runtime",
 ]
 [profile.release]

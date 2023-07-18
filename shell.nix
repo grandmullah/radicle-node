@@ -42,6 +42,12 @@ with nixpkgs; pkgs.mkShell {
   ENTRYPOINT ["/usr/src/app/target/release/node-template",  "--chain", "./customSpecRaw.json", "--base-path", "/tmp/node1", "--keystore-path", "/tmp/node1/chains/radicle_testnet/keystore"  "--port", "30333", "--ws-port", "9944" ,"--unsafe-ws-external", "--rpc-port","9933","--unsafe-rpc-external","--rpc-cors","all", "--validator","--name","node1" ]
 
 
+./target/release/node-template key insert --base-path /tmp/node2 \
+  --chain customSpecRaw.json \
+  --scheme Sr25519 \
+  --suri "sugar major runway canal note fitness kit brother invite gadget barely coffee" \
+  --key-type aura
+//sugar major runway canal note fitness kit brother invite gadget barely coffee
 # #[pallet::call_index(0)]
 # 		#[pallet::weight(0)]
 # 		pub fn add_usr(

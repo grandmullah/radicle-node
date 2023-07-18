@@ -27,8 +27,8 @@ pub mod pallet {
 	
 	use frame_support::sp_runtime::BoundedVec;
 	
-	use scale_info::TypeInfo;
-	use pallet_reward::RewardInterface;
+	
+	use scale_info::prelude::vec::Vec;
 
 	#[pallet::pallet]
 	#[pallet::without_storage_info]
@@ -40,8 +40,6 @@ pub mod pallet {
 		
 		#[pallet::constant]
 		type MaxIdLengthBytes: Get<u32>;
-
-		type RewardCoin:RewardInterface<Self::AccountId,Self::Balance>;
 		
 		type Balance: Member + Parameter + AtLeast32BitUnsigned + Default + Copy;
 	}
@@ -49,20 +47,27 @@ pub mod pallet {
 	pub type Name<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 	pub type PhoneNumber<T> = BoundedVec<u8,<T as Config>::MaxIdLengthBytes >;
 
-	#[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug)]
+	#[derive(Encode, Decode, Clone, PartialEq, Eq,TypeInfo, RuntimeDebug)]
 	pub struct Proposal {
-		pub base_fare:u32;
-		pub cost_per_mile:u32;
-		pub cost_per_minute: u32;
+		pub base_fare:u32,
+		pub cost_per_mile:u32,
+		pub cost_per_minute: u32,
+		pub on:bool,
+		pub votecount:u32,
+		pub yee:u32,
+		pub threshold:u32,
 	}
 
 	#[pallet::storage]
 	#[pallet::getter(fn proposal_index)]
-	pub type ProposalCount<T> = StorageValue<_, u32, ValueQuery>;
+	pub type Proposals<T> = StorageMap<_,  Blake2_128Concat, u32,Proposal, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn base_fare)]
-	pub type BasewFare<T> = StorageValue<_, u32, ValueQuery>;
+	pub type BaseFare<T> = StorageValue<_, u32, ValueQuery>;
+	#[pallet::storage]
+	#[pallet::getter(fn reward_amount)]
+	pub type Rewards<T> = StorageValue<_, u32, ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn cost_per_mile)]
@@ -74,11 +79,19 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn completed_rides)]
-	pub type PassedProposals<T: Config> = StorageValue<_, Vec<UberRide<T::AccountId>>, ValueQuery>;
+	pub type PassedProposals<T: Config> = StorageValue<_, Vec<Proposal>, ValueQuery>;
+
+	#[pallet::storage]
+	#[pallet::getter(fn get_members)]
+	pub type Members<T: Config> = StorageValue<_, Vec<T::AccountId>, ValueQuery>;
+
 
 	#[pallet::event]
+	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T:Config> {
-
+		MemberAdded(T::AccountId),
+		MemberRemoved(T::AccountId),
+		REWARDAMOUNTSET(u32)
 	}
 
 	// #[pallet::error]
@@ -100,32 +113,71 @@ pub mod pallet {
 
 		#[pallet::call_index(1)]
 		#[pallet::weight(0)]
-		pub fn proposal_fare(
+		pub fn set_proposal(
 			origin: OriginFor<T>,
-			//ride Id 
+			base_fare:u32,
+			cost_per_mile:u32,
+			cost_per_minute: u32,
 		) -> DispatchResultWithPostInfo {
 			let _signer = ensure_signed(origin)?;
+			let member_count = Members::<T>::get().len() as u32;
+			let  threshold = member_count/2;
 
-			// check if the driver is ready 
-			// calculate ride 
-			// emit request ride 
+			let proposal:Proposal = Proposal {
+				base_fare,
+				cost_per_mile,
+				cost_per_minute,
+				on:true,
+				votecount:0,
+				yee:0,
+				threshold,
+			};
+
+
 			Ok(Pays::No.into())
 		}
+		
 		#[pallet::call_index(2)]
 		#[pallet::weight(0)]
-		pub fn calculate_ride_fare(
+		pub fn add_member(
 			origin: OriginFor<T>,
-			distance: u32,
-			duration: u32,
+			
 		) -> DispatchResultWithPostInfo {
-			let base_fare = 1;
-			let cost_per_mile = 2;
-			let cost_per_minute: u32 = 1;
-			let fare = base_fare + distance * cost_per_mile + duration * cost_per_minute;
+			let new_member = ensure_signed(origin)?;
+			Members::<T>::mutate(|members| members.push(new_member.clone()));
 			// do something with the calculated fare
-			Ok(().into())
+
+			Self::deposit_event(Event::<T>::MemberAdded(new_member));
+			Ok(Pays::No.into())
 		}
-		
+		#[pallet::call_index(3)]
+		#[pallet::weight(0)]
+		pub fn leave_membership(
+			origin: OriginFor<T>,
+			
+		) -> DispatchResultWithPostInfo {
+			let member = ensure_signed(origin)?;
+			Members::<T>::mutate(|members| members.retain(|m| m != &member));
+			// do something with the calculated fare
+
+			Self::deposit_event(Event::<T>::MemberRemoved(member));
+			Ok(Pays::No.into())
+		}
+		#[pallet::call_index(4)]
+		#[pallet::weight(0)]
+		pub fn setReward(
+			origin: OriginFor<T>,
+			reward:u32,
+		) -> DispatchResultWithPostInfo {
+			let member = ensure_signed(origin)?;
+			<Rewards<T>>::put(reward);
+			// do something with the calculated fare
+
+			Self::deposit_event(Event::<T>::REWARDAMOUNTSET(reward));
+			Ok(Pays::No.into())
+		}
+
+
 		// set  base fare 
 		// set 
 		
@@ -135,6 +187,30 @@ pub mod pallet {
 		// emit rewards 
 		// get estimates 
 
+		
+
+	}
+	pub trait  SaccoInterface {
+		fn base_fare()->u32;
+		fn cost_per_mile()-> u32;
+		fn cost_per_minute()->u32;
+		fn get_rewards()->u32;
+
+	}
+	
+	impl <T:Config>SaccoInterface for Pallet<T> {
+		fn base_fare ()->u32 {
+			Self::base_fare()
+		}
+		fn cost_per_mile()->u32{
+			Self::cost_per_mile()
+		}
+		fn cost_per_minute()->u32{
+			Self::cost_per_minute()
+		}
+		fn get_rewards()->u32{
+			Self::reward_amount()
+		}
 	}
 
 }

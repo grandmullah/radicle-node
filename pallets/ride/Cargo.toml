@@ -19,6 +19,7 @@ frame-system = { version = "4.0.0-dev", default-features = false, git = "https:/
 serde = { version = "1.0.162", optional = true }
 pallet-reward = { version = "0.1.0", default-features = false, path = "../reward" }
 pallet-identity = { version = "0.1.0", default-features = false, path = "../identity" }
+pallet-sacco = { version = "0.1.0", default-features = false, path = "../sacco" }
 
 [dev-dependencies]
 sp-core = { version = "7.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.40" }

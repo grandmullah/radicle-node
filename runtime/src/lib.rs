@@ -50,6 +50,7 @@ pub use sp_runtime::{Perbill, Permill};
 pub use pallet_identity;
 pub use pallet_ride;
 pub use pallet_reward;
+pub use pallet_sacco;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -282,9 +283,16 @@ impl pallet_ride::Config for Runtime {
 	type Balance = Balance;
 	type MaxIdLengthBytes = ConstU32<32>;
 	type RewardCoin=Reward;
+	type Sacco=Sacco;
 	// type Identity = Identity;
 }
-
+impl pallet_sacco::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Balance = Balance;
+	type MaxIdLengthBytes = ConstU32<32>;
+	
+	// type Identity = Identity;
+}
 impl pallet_reward::Config<pallet_reward::Instance1> for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
@@ -308,7 +316,8 @@ construct_runtime!(
 		// Include the custom logic from the pallet-template in the runtime.
 		Identity:pallet_identity,
 		Ride:pallet_ride,
-		Reward:pallet_reward::<Instance1>
+		Reward:pallet_reward::<Instance1>,
+		Sacco:pallet_sacco
 		// TemplateModule: pallet_template,
 	}
 );

@@ -106,11 +106,11 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_user)]
-	pub(super) type Identity<T :Config>  = StorageMap<_, Blake2_128Concat, T::AccountId, User<T>, OptionQuery>;
+	pub type Identity<T :Config>  = StorageMap<_, Blake2_128Concat, T::AccountId, User<T>, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_driver)]
-	pub(super) type Drivers<T :Config>  = StorageMap<_, Blake2_128Concat, T::AccountId, Driver<T>, OptionQuery>;
+	pub type Drivers<T :Config>  = StorageMap<_, Blake2_128Concat, T::AccountId, Driver<T>, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn cab_count)]

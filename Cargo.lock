@@ -4248,6 +4248,7 @@ dependencies = [
  "pallet-identity",
  "pallet-reward",
  "pallet-ride",
+ "pallet-sacco",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
@@ -4569,6 +4570,23 @@ dependencies = [
  "frame-support",
  "frame-system",
  "pallet-identity",
+ "pallet-reward",
+ "pallet-sacco",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
+name = "pallet-sacco"
+version = "0.1.0"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
  "pallet-reward",
  "parity-scale-codec",
  "scale-info",
